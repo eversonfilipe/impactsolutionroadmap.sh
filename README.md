@@ -1,3 +1,5 @@
+<img width="1897" height="965" alt="Captura de tela 2025-09-01 132018" src="https://github.com/user-attachments/assets/c4976e78-d076-45a6-9592-62167560c2b3" alt="Print da primeira tela da aplicação logo após Roadmap ser gerado."/>
+
 # ImpactSolutionRoadmap.sh
 
 **Transforming complex social and environmental problems into actionable, collaborative blueprints.**
@@ -22,6 +24,9 @@ This project is an open-source, AI-powered platform designed to generate profess
 -   **Styling**: Tailwind CSS for a utility-first, responsive design.
 -   **Markdown Parsing**: `marked` and `DOMPurify` for secure and rich text rendering.
 -   **Deployment**: Designed for static hosting platforms like GitHub Pages, Vercel, or Netlify.
+
+<img width="1891" height="966" alt="Captura de tela 2025-09-01 132052" src="https://github.com/user-attachments/assets/5d6c6e08-d372-4a5e-a80f-6c490e4e6d78" alt="Print ilustrativo da última parte do Roadmap gerado."/>
+
 
 ## Getting Started
 
