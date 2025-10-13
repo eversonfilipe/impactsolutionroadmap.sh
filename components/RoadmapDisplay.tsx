@@ -6,6 +6,7 @@ import { DownloadIcon } from './icons/DownloadIcon';
 import { SaveIcon } from './icons/SaveIcon';
 import { CheckCircleIcon } from './icons/CheckCircleIcon';
 import ProgressBar from './ProgressBar';
+import { InfoIcon } from './icons/InfoIcon';
 
 /**
  * Props for the RoadmapDisplay component.
@@ -36,6 +37,17 @@ interface NodeCardProps {
 }
 
 /**
+ * Safely parses and sanitizes a Markdown string for rendering as HTML.
+ * @param {string | null | undefined} markdown - The markdown content to parse.
+ * @returns {string} Sanitized HTML string.
+ */
+const parseAndSanitizeMarkdown = (markdown: string | null | undefined): string => {
+    if (!markdown) return '';
+    const rawMarkup = marked.parse(markdown, { gfm: true, breaks: true });
+    return DOMPurify.sanitize(rawMarkup as string);
+};
+
+/**
  * A sub-component to render a single node within the roadmap.
  * It handles displaying the node's title, content (as sanitized HTML), references, and connections.
  * @param {NodeCardProps} props - The props for the component.
@@ -48,10 +60,9 @@ const NodeCard: React.FC<NodeCardProps> = ({ node, allNodes, onToggleCompletion 
     .map(connId => allNodes.find(n => n.id === connId)?.title)
     .filter(Boolean); // Filter out any undefined titles if a connection is invalid.
 
-  // Parse the Markdown content into HTML.
-  const rawMarkup = marked.parse(node.content, { gfm: true, breaks: true });
-  // Sanitize the generated HTML to prevent XSS attacks before rendering.
-  const cleanMarkup = DOMPurify.sanitize(rawMarkup as string);
+  const cleanContent = parseAndSanitizeMarkdown(node.content);
+  const cleanRationale = parseAndSanitizeMarkdown(node.rationale);
+
 
   return (
     <div className={`bg-brand-secondary border border-brand-border rounded-lg p-5 break-words transition-opacity duration-300 ${node.completed ? 'opacity-60' : 'opacity-100'}`}>
@@ -69,9 +80,22 @@ const NodeCard: React.FC<NodeCardProps> = ({ node, allNodes, onToggleCompletion 
 
       <div 
         className="prose prose-invert prose-sm max-w-none text-brand-text-secondary space-y-3"
-        dangerouslySetInnerHTML={{ __html: cleanMarkup }}
+        dangerouslySetInnerHTML={{ __html: cleanContent }}
       />
       
+       {cleanRationale && (
+        <div className="mt-4 p-3 bg-brand-primary/50 border-l-4 border-blue-400 rounded-r-md">
+          <h4 className="font-semibold text-sm text-brand-text-primary flex items-center gap-2">
+            <InfoIcon className="w-4 h-4" />
+            Why it Matters (Rationale)
+          </h4>
+          <div
+            className="prose prose-invert prose-xs max-w-none text-brand-text-secondary mt-1"
+            dangerouslySetInnerHTML={{ __html: cleanRationale }}
+          />
+        </div>
+      )}
+
       {node.references && node.references.length > 0 && (
         <div className="mt-4">
           <h4 className="font-semibold text-sm text-brand-text-primary">References:</h4>
@@ -130,6 +154,10 @@ const RoadmapDisplay: React.FC<RoadmapDisplayProps> = ({ roadmap, onSave, onTogg
       markdown += `## ${node.completed ? '[x]' : '[ ]'} ${node.title}\n\n`;
       markdown += `**ID:** \`${node.id}\`\n\n`;
       markdown += `${node.content}\n\n`;
+      
+      if (node.rationale) {
+        markdown += `**Rationale:** ${node.rationale}\n\n`;
+      }
       
       if (node.references && node.references.length > 0) {
         markdown += `### References\n`;

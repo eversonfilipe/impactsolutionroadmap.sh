@@ -70,10 +70,12 @@ const RoadmapGeneratorView: React.FC<RoadmapGeneratorViewProps> = ({
             try {
                 const generatedData = processStreamedResponse(fullText);
 
+                // FIX: Added 'rationale' property to satisfy the RoadmapNode type.
                 const sanitizedNodes = (generatedData.nodes || []).map((n: Partial<RoadmapNode>) => ({
                     id: n.id || `node-${Math.random().toString(36).substr(2, 9)}`,
                     title: n.title || 'Untitled Node',
                     content: n.content || 'No content provided.',
+                    rationale: n.rationale || 'No rationale provided.',
                     connections: Array.isArray(n.connections) ? n.connections : [],
                     references: Array.isArray(n.references) ? n.references : [],
                     completed: false,

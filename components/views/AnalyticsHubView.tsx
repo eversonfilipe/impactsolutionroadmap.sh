@@ -3,6 +3,7 @@ import { generateAnalyticsReport } from '../../services/geminiService';
 import { AnalyticsReport, EsgMetric } from '../../types';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
+import { InfoIcon } from '../icons/InfoIcon';
 
 /**
  * Props for the KpiCard component.
@@ -168,7 +169,17 @@ const AnalyticsHubView: React.FC = () => {
                             <p className="text-sm text-brand-text-secondary">{report.summary}</p>
                         </div>
                         <div className="lg:col-span-2 bg-brand-secondary p-6 rounded-lg border border-brand-border">
-                             <h3 className="text-lg font-bold text-brand-text-primary mb-4">Estimated Carbon Footprint ({report.carbonFootprint.unit})</h3>
+                             <h3 className="text-lg font-bold text-brand-text-primary mb-1">Estimated Carbon Footprint ({report.carbonFootprint.unit})</h3>
+                             <div className="flex items-center gap-2 mb-4 text-xs text-brand-text-secondary">
+                                <span>Confidence: <strong>{report.carbonFootprint.confidenceScore}</strong></span>
+                                <div className="relative group">
+                                    <InfoIcon className="w-4 h-4 cursor-pointer" />
+                                    <div className="absolute bottom-full mb-2 w-64 bg-brand-primary text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 border border-brand-border shadow-lg">
+                                        {report.carbonFootprint.confidenceRationale}
+                                    </div>
+                                </div>
+                             </div>
+
                              <div className="w-full bg-brand-primary rounded-full h-8 flex border border-brand-border" title={`Total: ${totalEmissions.toLocaleString()} ${report.carbonFootprint.unit}`}>
                                 <div className="bg-green-700 h-full" style={{ width: `${(scope1 / totalEmissions) * 100}%` }} title={`Scope 1: ${scope1.toLocaleString()}`}></div>
                                 <div className="bg-green-500 h-full" style={{ width: `${(scope2 / totalEmissions) * 100}%` }} title={`Scope 2: ${scope2.toLocaleString()}`}></div>
@@ -187,6 +198,10 @@ const AnalyticsHubView: React.FC = () => {
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {report.metrics.map(metric => <KpiCard key={metric.name} metric={metric} />)}
                         </div>
+                    </div>
+                     <div className="bg-brand-secondary p-6 rounded-lg border border-brand-border">
+                        <h3 className="text-xl font-bold text-brand-text-primary mb-4">Top ESG Risks & Opportunities</h3>
+                        {renderMarkdown(report.risksAndOpportunities)}
                     </div>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                          <div className="bg-brand-secondary p-6 rounded-lg border border-brand-border">

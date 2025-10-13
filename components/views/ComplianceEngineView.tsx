@@ -12,7 +12,7 @@ const regulations = [
     "GRI (Global Reporting Initiative)",
 ];
 
-type ReportTab = 'summary' | 'checklist' | 'matrix' | 'document';
+type ReportTab = 'summary' | 'implications' | 'checklist' | 'matrix' | 'document';
 
 /**
  * The main view for the Smart Compliance Engine. It enables users to select a regulation,
@@ -124,16 +124,18 @@ const ComplianceEngineView: React.FC = () => {
                     <h3 className="text-center text-xl font-bold">Compliance Package for: <span className="text-brand-accent">{report.regulation}</span></h3>
                     
                     {/* Tab Navigation */}
-                    <div className="flex border-b border-brand-border">
-                        <button onClick={() => setActiveTab('summary')} className={`px-4 py-2 text-sm font-semibold ${activeTab === 'summary' ? 'border-b-2 border-brand-accent text-brand-accent' : 'text-brand-text-secondary'}`}>Summary</button>
-                        <button onClick={() => setActiveTab('checklist')} className={`px-4 py-2 text-sm font-semibold ${activeTab === 'checklist' ? 'border-b-2 border-brand-accent text-brand-accent' : 'text-brand-text-secondary'}`}>Checklist</button>
-                        <button onClick={() => setActiveTab('matrix')} className={`px-4 py-2 text-sm font-semibold ${activeTab === 'matrix' ? 'border-b-2 border-brand-accent text-brand-accent' : 'text-brand-text-secondary'}`}>Materiality Matrix</button>
-                        <button onClick={() => setActiveTab('document')} className={`px-4 py-2 text-sm font-semibold ${activeTab === 'document' ? 'border-b-2 border-brand-accent text-brand-accent' : 'text-brand-text-secondary'}`}>Draft Document</button>
+                    <div className="flex border-b border-brand-border overflow-x-auto">
+                        <button onClick={() => setActiveTab('summary')} className={`flex-shrink-0 px-4 py-2 text-sm font-semibold ${activeTab === 'summary' ? 'border-b-2 border-brand-accent text-brand-accent' : 'text-brand-text-secondary'}`}>Summary</button>
+                        <button onClick={() => setActiveTab('implications')} className={`flex-shrink-0 px-4 py-2 text-sm font-semibold ${activeTab === 'implications' ? 'border-b-2 border-brand-accent text-brand-accent' : 'text-brand-text-secondary'}`}>Strategic Implications</button>
+                        <button onClick={() => setActiveTab('checklist')} className={`flex-shrink-0 px-4 py-2 text-sm font-semibold ${activeTab === 'checklist' ? 'border-b-2 border-brand-accent text-brand-accent' : 'text-brand-text-secondary'}`}>Checklist</button>
+                        <button onClick={() => setActiveTab('matrix')} className={`flex-shrink-0 px-4 py-2 text-sm font-semibold ${activeTab === 'matrix' ? 'border-b-2 border-brand-accent text-brand-accent' : 'text-brand-text-secondary'}`}>Materiality Matrix</button>
+                        <button onClick={() => setActiveTab('document')} className={`flex-shrink-0 px-4 py-2 text-sm font-semibold ${activeTab === 'document' ? 'border-b-2 border-brand-accent text-brand-accent' : 'text-brand-text-secondary'}`}>Draft Document</button>
                     </div>
 
                     {/* Tab Content */}
                     <div className="pt-4">
                         {activeTab === 'summary' && renderMarkdown(report.summaryOfObligations)}
+                        {activeTab === 'implications' && renderMarkdown(report.strategicImplicationsMarkdown)}
                         {activeTab === 'checklist' && renderMarkdown(report.checklistMarkdown)}
                         {activeTab === 'matrix' && renderMarkdown(report.materialityMatrixMarkdown)}
                         {activeTab === 'document' && renderMarkdown(report.draftDocumentMarkdown)}

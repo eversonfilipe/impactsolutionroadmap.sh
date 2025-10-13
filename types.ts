@@ -10,6 +10,8 @@ export interface RoadmapNode {
   title: string;
   /** Detailed description of the node's purpose, tasks, and goals. Expected to be in Markdown format. */
   content: string;
+  /** A brief, strategic justification for why this node is important for the project's success. Expected to be in Markdown format. */
+  rationale: string;
   /** An array of URLs or source identifiers that support this node's content. */
   references?: string[];
   /** An array of other node IDs that this node logically connects to, defining the roadmap's flow. */
@@ -56,6 +58,10 @@ export interface CarbonFootprint {
   unit: string;
   /** A brief explanation of the estimation methodology. */
   methodology: string;
+  /** The AI's confidence in its estimation. */
+  confidenceScore: 'Low' | 'Medium' | 'High';
+  /** The rationale behind the assigned confidence score. */
+  confidenceRationale: string;
 }
 
 /**
@@ -80,6 +86,8 @@ export interface AnalyticsReport {
   overallScore: number;
   /** A summary of the ESG analysis. */
   summary: string;
+  /** An executive summary identifying the top ESG risks and opportunities for the project. In Markdown format. */
+  risksAndOpportunities: string;
   /** The detailed carbon footprint estimation. */
   carbonFootprint: CarbonFootprint;
   /** An array of suggested ESG metrics and KPIs. */
@@ -99,6 +107,8 @@ export interface ComplianceReport {
     regulation: string;
     /** A high-level summary of the key obligations under the regulation, in Markdown format. */
     summaryOfObligations: string;
+    /** An analysis of the strategic implications this regulation may have on the organization. In Markdown format. */
+    strategicImplicationsMarkdown: string;
     /** A detailed compliance checklist in Markdown format. */
     checklistMarkdown: string;
     /** A generated draft of a key document in Markdown format. */
