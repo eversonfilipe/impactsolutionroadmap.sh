@@ -1,4 +1,4 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 import { Roadmap, AnalyticsReport, ComplianceReport } from '../types';
 
 /**
@@ -160,56 +160,51 @@ export const processStreamedResponse = (fullText: string): GeneratedRoadmap => {
 export const generateAnalyticsReport = async (projectDescription: string): Promise<AnalyticsReport> => {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-    const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: `Please generate a comprehensive ESG analysis based on the following project description.
+    const fullPrompt = `
+        Please generate a comprehensive ESG analysis based on the following project description.
+        The entire response must be a single JSON object conforming EXACTLY to the schema provided below. Do NOT add any extra text, conversation, or markdown formatting.
 
         **Project Description:**
         ---
         ${projectDescription}
         ---
-        `,
-        config: {
-            systemInstruction: `${AI_PERSONA_BASE} You are now acting as a Quantitative ESG Analyst. Your task is to provide an estimated ESG analysis based on a user's project description. You must use your web search tool to find relevant data for estimations (e.g., industry benchmarks for emissions). Your entire output must be a single, valid JSON object adhering to the provided schema. Do not add any other text.`,
-            tools: [{googleSearch: {}}],
-            responseMimeType: "application/json",
-            responseSchema: {
-                type: Type.OBJECT,
-                properties: {
-                    overallScore: { type: Type.INTEGER, description: "An overall ESG score from 0 to 100, reflecting the project's estimated impact." },
-                    summary: { type: Type.STRING, description: "A concise, professional summary of the ESG analysis." },
-                    risksAndOpportunities: { type: Type.STRING, description: "An executive summary in Markdown, identifying the top 3 ESG risks and top 3 ESG opportunities for this project."},
-                    carbonFootprint: {
-                        type: Type.OBJECT,
-                        properties: {
-                            scope1: { type: Type.NUMBER, description: "Estimated Scope 1 emissions in tonnes of CO2 equivalent (tCO2e)." },
-                            scope2: { type: Type.NUMBER, description: "Estimated Scope 2 emissions in tCO2e." },
-                            scope3: { type: Type.NUMBER, description: "Estimated Scope 3 emissions in tCO2e." },
-                            unit: { type: Type.STRING, description: "Unit of measurement, which must be 'tCO2e'."},
-                            methodology: { type: Type.STRING, description: "A brief, transparent explanation of the estimation methodology, citing any benchmarks used."},
-                            confidenceScore: { type: Type.STRING, enum: ["Low", "Medium", "High"], description: "Your confidence in this estimation based on the provided data."},
-                            confidenceRationale: { type: Type.STRING, description: "A brief justification for the confidence score."}
-                        },
-                        required: ["scope1", "scope2", "scope3", "unit", "methodology", "confidenceScore", "confidenceRationale"]
-                    },
-                    metrics: {
-                        type: Type.ARRAY,
-                        items: {
-                            type: Type.OBJECT,
-                            properties: {
-                                name: { type: Type.STRING, description: "Name of a relevant ESG Key Performance Indicator (KPI)." },
-                                value: { type: Type.STRING, description: "An estimated value or benchmark for the KPI." },
-                                category: { type: Type.STRING, enum: ["Environmental", "Social", "Governance"] },
-                                insight: { type: Type.STRING, description: "A brief insight or suggestion related to this metric." }
-                            },
-                             required: ["name", "value", "category", "insight"]
-                        }
-                    },
-                    draftReportMarkdown: { type: Type.STRING, description: "A well-structured draft of a simple ESG report in Markdown format, including sections for each ESG pillar." },
-                    recommendations: { type: Type.STRING, description: "A list of 3-5 actionable recommendations for improving the project's ESG performance, in Markdown format." }
-                },
-                required: ["overallScore", "summary", "risksAndOpportunities", "carbonFootprint", "metrics", "draftReportMarkdown", "recommendations"]
+
+        **Required JSON Schema:**
+        \`\`\`json
+        {
+          "overallScore": 100,
+          "summary": "A concise, professional summary of the ESG analysis.",
+          "risksAndOpportunities": "An executive summary in Markdown, identifying the top 3 ESG risks and top 3 ESG opportunities for this project.",
+          "carbonFootprint": {
+            "scope1": 0,
+            "scope2": 0,
+            "scope3": 0,
+            "unit": "tCO2e",
+            "methodology": "A brief, transparent explanation of the estimation methodology, citing any benchmarks used.",
+            "confidenceScore": "Medium",
+            "confidenceRationale": "A brief justification for the confidence score."
+          },
+          "metrics": [
+            {
+              "name": "Name of a relevant ESG Key Performance Indicator (KPI).",
+              "value": "An estimated value or benchmark for the KPI.",
+              "category": "Environmental",
+              "insight": "A brief insight or suggestion related to this metric."
             }
+          ],
+          "draftReportMarkdown": "A well-structured draft of a simple ESG report in Markdown format, including sections for each ESG pillar.",
+          "recommendations": "A list of 3-5 actionable recommendations for improving the project's ESG performance, in Markdown format."
+        }
+        \`\`\`
+    `;
+
+    const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: fullPrompt,
+        config: {
+            systemInstruction: `${AI_PERSONA_BASE} You are now acting as a Quantitative ESG Analyst. Your task is to provide an estimated ESG analysis based on a user's project description. You must use your web search tool to find relevant data for estimations (e.g., industry benchmarks for emissions). Your entire output must be a single, valid JSON object adhering to the schema provided in the user prompt. Do not add any other text.`,
+            tools: [{googleSearch: {}}],
+            temperature: 0.2,
         }
     });
 
@@ -259,32 +254,37 @@ export const answerEsgQuestion = async (question: string, callbacks: StreamCallb
 export const generateComplianceReport = async (regulation: string, context: string): Promise<ComplianceReport> => {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
+    const fullPrompt = `
+        Based on the provided regulation and organizational context, generate a detailed compliance package.
+        The entire response must be a single JSON object conforming EXACTLY to the schema provided below. Do NOT add any extra text, conversation, or markdown formatting.
+
+        **Regulation:** "${regulation}"
+        
+        **Organization Context:**
+        ---
+        ${context}
+        ---
+
+        **Required JSON Schema:**
+        \`\`\`json
+        {
+          "regulation": "The full name of the regulation.",
+          "summaryOfObligations": "A high-level summary of the key obligations under this regulation for an organization of this type, in Markdown format.",
+          "strategicImplicationsMarkdown": "An analysis of the strategic implications (risks, opportunities, business model impact) of this regulation for the organization, in Markdown format.",
+          "checklistMarkdown": "A detailed, actionable compliance checklist in Markdown format, with steps organized logically.",
+          "draftDocumentMarkdown": "A draft of a key compliance document (e.g., a policy statement or disclosure section) relevant to the regulation, in Markdown format.",
+          "materialityMatrixMarkdown": "An AI-generated materiality matrix in a Markdown table format, identifying and prioritizing relevant ESG topics."
+        }
+        \`\`\`
+    `;
+
     const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
-        contents: `
-            Regulation: "${regulation}"
-            
-            Organization Context:
-            ---
-            ${context}
-            ---
-        `,
+        contents: fullPrompt,
         config: {
-            systemInstruction: `${AI_PERSONA_BASE} You are now acting as a Regulatory Compliance Specialist. Based on the provided regulation and organizational context, generate a detailed compliance package. Go beyond a simple checklist. Analyze the potential strategic business implications of this regulation. Use your web search tool for specific details about the regulation to ensure accuracy. Your entire output must be a single, valid JSON object adhering to the schema. Do not add any other text.`,
+            systemInstruction: `${AI_PERSONA_BASE} You are now acting as a Regulatory Compliance Specialist. Based on the provided regulation and organizational context, generate a detailed compliance package. Go beyond a simple checklist. Analyze the potential strategic business implications of this regulation. Use your web search tool for specific details about the regulation to ensure accuracy. Your entire output must be a single, valid JSON object adhering to the schema in the user prompt. Do not add any other text.`,
             tools: [{googleSearch: {}}],
-            responseMimeType: "application/json",
-            responseSchema: {
-                type: Type.OBJECT,
-                properties: {
-                    regulation: { type: Type.STRING, description: "The full name of the regulation." },
-                    summaryOfObligations: { type: Type.STRING, description: "A high-level summary of the key obligations under this regulation for an organization of this type, in Markdown format."},
-                    strategicImplicationsMarkdown: { type: Type.STRING, description: "An analysis of the strategic implications (risks, opportunities, business model impact) of this regulation for the organization, in Markdown format."},
-                    checklistMarkdown: { type: Type.STRING, description: "A detailed, actionable compliance checklist in Markdown format, with steps organized logically."},
-                    draftDocumentMarkdown: { type: Type.STRING, description: "A draft of a key compliance document (e.g., a policy statement or disclosure section) relevant to the regulation, in Markdown format."},
-                    materialityMatrixMarkdown: { type: Type.STRING, description: "An AI-generated materiality matrix in a Markdown table format, identifying and prioritizing relevant ESG topics."}
-                },
-                required: ["regulation", "summaryOfObligations", "strategicImplicationsMarkdown", "checklistMarkdown", "draftDocumentMarkdown", "materialityMatrixMarkdown"]
-            }
+            temperature: 0.2,
         }
     });
 
