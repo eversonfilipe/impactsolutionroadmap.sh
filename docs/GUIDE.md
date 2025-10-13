@@ -1,89 +1,87 @@
-# ImpactSolutionRoadmap.sh - User Guide
+# ImpactSolutionRoadmap.sh - The Complete User Guide
 
-Welcome! This guide will walk you through the features of `ImpactSolutionRoadmap.sh` to help you create powerful and actionable blueprints for your impact projects.
+Welcome! This guide will walk you through the powerful features of `ImpactSolutionRoadmap.sh` to help you create, analyze, and manage professional blueprints for your impact projects.
 
-The application is organized into four main modules:
+The application is organized into four main modules, accessible via the top navigation bar:
 
 1.  **Roadmap Generator**: The core tool for creating detailed project blueprints.
-2.  **Analytics Hub**: For measuring and analyzing ESG impact metrics.
+2.  **Analytics Hub**: For measuring and analyzing your project's ESG impact.
 3.  **Knowledge Base**: An AI-powered expert for your ESG-related questions.
-4.  **Compliance Engine**: To help you navigate and automate ESG compliance.
+4.  **Compliance Engine**: To help you navigate and automate ESG regulatory compliance.
 
 ---
 
-## 1. Roadmap Generator
+## 1. The Roadmap Generator
 
-This module allows you to create comprehensive roadmaps from a simple idea.
+This is where you transform your ideas into actionable plans.
 
 ### Step 1: Define Your Goal
+In the **"Your Roadmap Goal"** text area, describe what you want to achieve. The more specific and detailed your prompt, the better the result.
 
-The first step is to tell the AI what you want to achieve. This is done in the **"Your Roadmap Goal"** text area. A good prompt is clear, specific, and provides enough detail for the AI to understand the scope of your project.
-
--   **Bad Prompt:** "Make a roadmap for water."
--   **Good Prompt:** "Create a detailed blueprint for a community-led water purification and distribution system in a rural, semi-arid village. The solution should be low-cost, sustainable, and use locally sourced materials where possible. Include phases for community engagement, technology selection, implementation, and long-term maintenance."
+-   **Basic Prompt:** "Make a roadmap for clean water."
+-   **Professional Prompt:** "Create a detailed blueprint for a community-led water purification and distribution system in a rural, semi-arid village. The solution must be low-cost, sustainable, and use locally sourced materials. Include phases for community engagement, technology selection, implementation, and long-term maintenance."
 
 ### Step 2: Add Context (Optional but Recommended)
-
-If you have existing research, project documents, or specific data, you can upload them in the **"Add Context"** section. The AI will use the content of these files to create a more tailored and informed roadmap.
+Use the **"Add Context"** section to upload supporting documents. The AI will synthesize the information in these files to create a more tailored and informed roadmap.
 
 -   Click the upload area or drag and drop your files.
--   Supported formats: `.txt`, `.md`, `.json`, `.html`, `.pdf`.
--   This is perfect for providing case studies, technical specifications, or stakeholder analyses.
+-   **Supported formats:** `.txt`, `.md`, `.json`, `.html`, `.pdf`.
+-   This is ideal for providing case studies, technical specifications, stakeholder analyses, or research notes.
 
-### Step 3: Generate and Interact with Your Roadmap
+### Step 3: Generate and Interact
+Click **"Generate Blueprint"** and watch the AI build your plan in real time. Once complete, your professional roadmap will appear. You can now:
 
-Click **"Generate Blueprint"** and watch the AI build your plan. Once complete, you can:
-
--   **Track Progress:** Click the check circle icon on each node to mark it as complete.
--   **Save Your Work:** Click the **"Save"** button to add the roadmap to your History. Progress updates are saved automatically.
--   **Download as Markdown:** Click the download icon to save your roadmap as a `.md` file.
+-   **Track Progress:** Click the check circle icon on any step to mark it as complete. Your overall progress is shown in the progress bar.
+-   **Understand the "Why":** Each step includes a "Why it Matters" section, explaining the strategic rationale behind it.
+-   **Save Your Work:** Click the **"Save"** button. The roadmap is now stored in your browser's history, and any progress you make will be saved automatically.
+-   **Download as Markdown:** Click the download icon to save your full roadmap as a `.md` file for offline use or sharing.
 
 ---
 
-## 2. Analytics Hub
+## 2. The Analytics Hub
 
 This hub provides AI-driven tools to estimate and report on your project's ESG impact.
 
-1.  **Describe Your Project**: In the text area, provide a clear description of your project or organization's activities. Include details like size, location, and key operations.
+1.  **Describe Your Project**: In the text area, provide a clear description of your project or organization. Include details like size, industry, location, and key operations for a more accurate analysis.
 2.  **Generate Report**: Click **"Generate ESG Analysis"**.
-3.  **Review Your Dashboard**: The AI will generate a dashboard with:
-    -   An **estimated carbon footprint** (Scopes 1, 2, and 3).
-    -   An **overall ESG score** with a breakdown of Environmental, Social, and Governance factors.
-    -   A list of **suggested KPIs** relevant to your project.
-    -   A **draft ESG report** in Markdown format.
-
-This provides a powerful starting point for your impact measurement and reporting efforts.
-
----
-
-## 3. Knowledge Base
-
-Leverage the AI as an ESG expert to answer your questions and generate roadmap templates.
-
--   **Ask a Question**: Type any question about ESG frameworks (like GRI, SASB), methodologies, or best practices into the input box and click **"Ask"**. The AI will provide a detailed, referenced answer using its web search capabilities.
--   **Generate Templates**: Use the second form to request a specific type of roadmap (e.g., "A roadmap for a circular economy startup in the fashion industry"). The generated roadmap will appear in the main "Roadmap Generator" tab, ready for you to customize and save.
+3.  **Review Your Dashboard**: The AI will generate a professional dashboard with:
+    -   An **Overall ESG Score** and summary.
+    -   An **Estimated Carbon Footprint** (Scopes 1, 2, and 3) with a confidence score.
+    -   A list of **Suggested ESG KPIs** relevant to your project.
+    -   An analysis of **Top ESG Risks & Opportunities**.
+    -   A **Draft ESG Report** and **Actionable Recommendations** in Markdown format.
 
 ---
 
-## 4. Compliance Engine
+## 3. The Knowledge Base
+
+Leverage the AI as an on-demand ESG expert.
+
+-   **Ask a Question**: Type any question about ESG frameworks (like GRI, SASB), methodologies, or best practices into the "Ask the ESG Expert" box and click **"Ask Question"**. The AI will provide a detailed, referenced answer using its web search capabilities.
+-   **Generate Templates**: Use the "Generate a Roadmap Template" form to request a specific type of plan (e.g., "A roadmap for a circular economy startup in the fashion industry"). Clicking **"Generate Template & Go"** will create the roadmap and immediately take you to the main Roadmap Generator tab, where you can customize and save it.
+
+---
+
+## 4. The Compliance Engine
 
 This module helps you automate the complex process of complying with global ESG regulations.
 
-1.  **Select a Regulation**: Choose a standard from the dropdown list (e.g., CSRD, TCFD, EU Taxonomy).
-2.  **Provide Context**: Briefly describe your organization and its operations.
-3.  **Generate Compliance Pack**: Click the button to have the AI generate a customized compliance package, which includes:
-    -   A detailed, step-by-step **compliance checklist**.
-    -   A **draft of a key compliance document** relevant to the selected regulation.
-    -   An AI-generated **materiality matrix** identifying key ESG topics for your organization.
+1.  **Select a Regulation**: Choose a standard from the dropdown list (e.g., CSRD, TCFD).
+2.  **Provide Context**: Briefly describe your organization so the AI can tailor the output.
+3.  **Generate Compliance Pack**: Click the button to generate a customized compliance package, which is presented in a clean, tabbed interface:
+    -   **Summary:** A high-level overview of your key obligations.
+    -   **Strategic Implications:** An analysis of how the regulation impacts your business model.
+    -   **Checklist:** A detailed, step-by-step compliance checklist.
+    -   **Materiality Matrix:** An AI-generated matrix of key ESG topics.
+    -   **Draft Document:** A draft of a relevant compliance document.
 
 ---
 
-## Managing Your History
+## Managing Your Roadmap History
 
-Click the **"History"** button in the navigation bar to open the history panel. Here you can:
+Click the **"History"** button in the top navigation bar to open a panel with all your saved roadmaps.
 
--   **View Saved Roadmaps:** See a list of all the blueprints you've saved.
--   **Load a Previous Version:** Click on any roadmap in the list to load it as your active roadmap.
--   **Delete a Roadmap:** Click the trash can icon to permanently remove a roadmap from your history.
+-   **Load a Roadmap:** Click on any roadmap in the list to make it your active roadmap in the generator view.
+-   **Delete a Roadmap:** Click the trash can icon to permanently remove a roadmap from your history. A confirmation will be required.
 
-Thank you for using ImpactSolutionRoadmap.sh to bring your ideas to life!
+Thank you for using ImpactSolutionRoadmap.sh to architect a better future!
