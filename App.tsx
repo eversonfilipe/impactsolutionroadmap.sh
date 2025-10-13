@@ -1,12 +1,17 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Roadmap, RoadmapNode } from './types';
-import { generateRoadmapStream, processStreamedResponse } from './services/geminiService';
-import { readFilesAsText } from './utils/fileReader';
 import Header from './components/Header';
-import PromptForm from './components/PromptForm';
-import RoadmapDisplay from './components/RoadmapDisplay';
 import HistoryPanel from './components/HistoryPanel';
-import StreamingResponseDisplay from './components/StreamingResponseDisplay';
+import Navigation from './components/Navigation';
+import RoadmapGeneratorView from './components/views/RoadmapGeneratorView';
+import AnalyticsHubView from './components/views/AnalyticsHubView';
+import KnowledgeBaseView from './components/views/KnowledgeBaseView';
+import ComplianceEngineView from './components/views/ComplianceEngineView';
+
+/**
+ * Defines the available views (main sections) of the application.
+ */
+export type AppView = 'roadmap' | 'analytics' | 'knowledge' | 'compliance';
 
 /**
  * The key used to store the roadmap history in the browser's local storage.
@@ -15,9 +20,15 @@ const LOCAL_STORAGE_HISTORY_KEY = 'impact_roadmaps_history';
 
 /**
  * The main application component. It orchestrates the entire user flow,
- * managing state for the active roadmap, generation process, and user's history.
+ * managing state for the active roadmap, generation process, and user's history,
+ * and routing between the different feature views.
  */
 const App: React.FC = () => {
+  /**
+   * State to control which main view is currently displayed.
+   */
+  const [activeView, setActiveView] = useState<AppView>('roadmap');
+
   /**
    * State to control the visibility of the roadmap history panel.
    */
@@ -34,19 +45,25 @@ const App: React.FC = () => {
   const [roadmapHistory, setRoadmapHistory] = useState<Roadmap[]>([]);
   
   /**
-   * A boolean flag indicating if the AI is currently generating a response.
+   * State to hold the PWA install prompt event.
    */
-  const [isLoading, setIsLoading] = useState(false);
-  
+  const [installPromptEvent, setInstallPromptEvent] = useState<Event | null>(null);
+
   /**
-   * Stores any error message that occurs during the generation process.
+   * Effect to listen for the `beforeinstallprompt` event to enable PWA installation.
    */
-  const [error, setError] = useState<string | null>(null);
-  
-  /**
-   * Stores the raw, incoming text from the AI during a streaming response.
-   */
-  const [streamingResponse, setStreamingResponse] = useState('');
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setInstallPromptEvent(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
 
   /**
    * Effect to load the roadmap history from local storage on initial component mount.
@@ -55,77 +72,6 @@ const App: React.FC = () => {
     const storedHistory = localStorage.getItem(LOCAL_STORAGE_HISTORY_KEY);
     if (storedHistory) {
       setRoadmapHistory(JSON.parse(storedHistory));
-    }
-  }, []);
-
-  /**
-   * Handles the entire roadmap generation process, from reading files to calling the AI service
-   * and processing the streamed response.
-   * @param prompt - The user's primary goal for the roadmap.
-   * @param files - An array of context files uploaded by the user.
-   */
-  const handleGenerate = useCallback(async (prompt: string, files: File[]) => {
-    if (!prompt.trim()) {
-        setError("Prompt cannot be empty.");
-        return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-    setActiveRoadmap(null);
-    setStreamingResponse('');
-    let accumulatedText = '';
-
-    try {
-      const context = files.length > 0 ? await readFilesAsText(files) : '';
-      
-      await generateRoadmapStream(prompt, context, {
-        onChunk: (textChunk) => {
-            accumulatedText += textChunk;
-            setStreamingResponse(accumulatedText);
-        },
-        onComplete: (fullText) => {
-            try {
-                const generatedData = processStreamedResponse(fullText);
-
-                // Sanitize the data received from the AI to prevent runtime errors.
-                // This ensures that expected arrays are always arrays.
-                const sanitizedNodes = (generatedData.nodes || []).map((n: Partial<RoadmapNode>) => ({
-                    id: n.id || `node-${Math.random().toString(36).substr(2, 9)}`,
-                    title: n.title || 'Untitled Node',
-                    content: n.content || 'No content provided.',
-                    connections: Array.isArray(n.connections) ? n.connections : [],
-                    references: Array.isArray(n.references) ? n.references : [],
-                    completed: false,
-                }));
-
-                const newRoadmap: Roadmap = {
-                    id: `roadmap_${Date.now()}`,
-                    generatedAt: Date.now(),
-                    title: generatedData.title || 'Untitled Roadmap',
-                    description: generatedData.description || '',
-                    nodes: sanitizedNodes,
-                    sources: Array.isArray(generatedData.sources) ? generatedData.sources : [],
-                };
-                
-                setActiveRoadmap(newRoadmap);
-            } catch (parseError) {
-                console.error(parseError);
-                setError(parseError instanceof Error ? parseError.message : "Failed to parse the final roadmap from the AI's response.");
-            } finally {
-                setIsLoading(false);
-            }
-        },
-        onError: (streamError) => {
-            console.error(streamError);
-            setError(streamError.message);
-            setIsLoading(false);
-        }
-      });
-    } catch (err) {
-      console.error(err);
-      setError(err instanceof Error ? err.message : "An unknown error occurred during setup for roadmap generation.");
-      setIsLoading(false);
     }
   }, []);
 
@@ -141,7 +87,7 @@ const App: React.FC = () => {
   /**
    * Saves a new roadmap to the history or updates an existing one if it's already saved.
    */
-  const handleSaveOrUpdateRoadmap = () => {
+  const handleSaveOrUpdateRoadmap = useCallback(() => {
     if (!activeRoadmap) return;
     const existingIndex = roadmapHistory.findIndex(r => r.id === activeRoadmap.id);
     let newHistory;
@@ -154,7 +100,8 @@ const App: React.FC = () => {
         newHistory = [activeRoadmap, ...roadmapHistory];
     }
     updateHistory(newHistory);
-  };
+  }, [activeRoadmap, roadmapHistory]);
+
 
   /**
    * Loads a selected roadmap from the history into the active view.
@@ -164,6 +111,7 @@ const App: React.FC = () => {
     const roadmapToLoad = roadmapHistory.find(r => r.id === id);
     if (roadmapToLoad) {
         setActiveRoadmap(roadmapToLoad);
+        setActiveView('roadmap'); // Switch to roadmap view when loading
         setIsHistoryOpen(false);
     }
   };
@@ -186,7 +134,7 @@ const App: React.FC = () => {
    * Also updates the history if the active roadmap has been saved.
    * @param nodeId - The ID of the node to toggle.
    */
-  const handleToggleNodeCompletion = (nodeId: string) => {
+  const handleToggleNodeCompletion = useCallback((nodeId: string) => {
     if (!activeRoadmap) return;
     
     const updatedNodes = activeRoadmap.nodes.map(node => 
@@ -202,41 +150,52 @@ const App: React.FC = () => {
         const newHistory = roadmapHistory.map(r => r.id === updatedRoadmap.id ? updatedRoadmap : r);
         updateHistory(newHistory);
     }
+  }, [activeRoadmap, roadmapHistory]);
+
+
+  /**
+   * Handles the PWA installation request.
+   */
+  const handleInstall = async () => {
+    if (installPromptEvent && 'prompt' in installPromptEvent) {
+      (installPromptEvent as any).prompt();
+      const { outcome } = await (installPromptEvent as any).userChoice;
+      if (outcome === 'accepted') {
+        console.log('User accepted the install prompt');
+      } else {
+        console.log('User dismissed the install prompt');
+      }
+      setInstallPromptEvent(null);
+    }
   };
   
   return (
     <div className="min-h-screen bg-brand-primary text-brand-text-primary font-sans flex flex-col">
       <Header 
-        onToggleHistory={() => setIsHistoryOpen(!isHistoryOpen)}
+        onInstall={handleInstall}
+        showInstallButton={!!installPromptEvent}
       />
       <main className="flex-grow container mx-auto p-4 md:p-8 flex flex-col items-center">
         {/* The history panel is conditionally rendered as an overlay */}
         {isHistoryOpen && <HistoryPanel history={roadmapHistory} onLoad={handleLoadRoadmap} onDelete={handleDeleteRoadmap} onClose={() => setIsHistoryOpen(false)} />}
         
-        <div className="w-full max-w-4xl">
-          <PromptForm onGenerate={handleGenerate} isLoading={isLoading} />
-          
-          {error && (
-            <div className="mt-6 p-4 bg-red-900/50 border border-red-700 text-red-300 rounded-lg">
-              <p className="font-bold">Error:</p>
-              <p>{error}</p>
-            </div>
-          )}
-          
-          {/* Display the streaming response while loading */}
-          {isLoading && <StreamingResponseDisplay text={streamingResponse} />}
-          
-          {/* Display the final, formatted roadmap when not loading and one is active */}
-          {activeRoadmap && !isLoading && (
+        <div className="w-full max-w-6xl">
+            <Navigation activeView={activeView} setActiveView={setActiveView} onToggleHistory={() => setIsHistoryOpen(!isHistoryOpen)} />
+
             <div className="mt-8">
-              <RoadmapDisplay 
-                roadmap={activeRoadmap}
-                onSave={handleSaveOrUpdateRoadmap}
-                onToggleNodeCompletion={handleToggleNodeCompletion}
-                isSaved={roadmapHistory.some(r => r.id === activeRoadmap.id)}
-              />
+                {activeView === 'roadmap' && (
+                    <RoadmapGeneratorView
+                        activeRoadmap={activeRoadmap}
+                        setActiveRoadmap={setActiveRoadmap}
+                        roadmapHistory={roadmapHistory}
+                        onSaveOrUpdateRoadmap={handleSaveOrUpdateRoadmap}
+                        onToggleNodeCompletion={handleToggleNodeCompletion}
+                    />
+                )}
+                {activeView === 'analytics' && <AnalyticsHubView />}
+                {activeView === 'knowledge' && <KnowledgeBaseView setActiveRoadmap={setActiveRoadmap} setActiveView={setActiveView} />}
+                {activeView === 'compliance' && <ComplianceEngineView />}
             </div>
-          )}
         </div>
       </main>
       <footer className="text-center p-4 text-brand-text-secondary text-sm border-t border-brand-border">

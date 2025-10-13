@@ -13,10 +13,12 @@
     "react-dom": "^19.1.1",
     "react": "^19.1.1",
     "marked": "latest",
-    "dompurify": "latest"
+    "dompurify": "latest",
+    "pdfjs-dist": "4.4.168"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
   }

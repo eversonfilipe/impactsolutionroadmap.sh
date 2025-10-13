@@ -9,7 +9,10 @@ This project is an open-source, AI-powered platform designed to generate profess
 ## Core Features
 
 -   **AI-Powered Generation**: Leverages Google's Gemini API to create detailed, structured roadmaps from a simple prompt.
--   **Context-Aware**: Users can upload documents (.txt, .md, etc.) to provide the AI with specific context, ensuring more accurate and relevant blueprints.
+-   **ESG Analytics Hub**: Generate estimated carbon footprints, ESG scores, and draft sustainability reports based on your project descriptions.
+-   **Collaborative Knowledge Base**: Ask the AI complex questions about ESG frameworks and methodologies to get grounded, well-referenced answers.
+-   **Smart Compliance Engine**: Automatically generate compliance checklists and documentation drafts for major ESG regulations like CSRD and TCFD.
+-   **Context-Aware**: Upload documents (.txt, .md, .pdf) to provide the AI with specific context, ensuring more accurate and relevant blueprints.
 -   **Live Progress**: Watch the AI build your roadmap in real-time with a streaming response display.
 -   **Progress Tracking**: Mark roadmap steps as complete and visualize your progress with a dynamic progress bar.
 -   **Versioning & History**: Save, load, and manage different versions of your roadmaps directly in your browser.
@@ -26,7 +29,6 @@ This project is an open-source, AI-powered platform designed to generate profess
 -   **Deployment**: Designed for static hosting platforms like GitHub Pages, Vercel, or Netlify.
 
 <img width="1891" height="966" alt="Captura de tela 2025-09-01 132052" src="https://github.com/user-attachments/assets/5d6c6e08-d372-4a5e-a80f-6c490e4e6d78" alt="Print ilustrativo da última parte do Roadmap gerado."/>
-
 
 ## Getting Started
 

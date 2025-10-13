@@ -69,13 +69,13 @@ const PromptForm: React.FC<PromptFormProps> = ({ onGenerate, isLoading }) => {
             onChange={handleFileChange}
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             disabled={isLoading}
-            accept=".txt,.md,.json,.html"
+            accept=".txt,.md,.json,.html,.pdf"
             aria-label="Upload context files"
           />
           <div className="flex flex-col items-center text-brand-text-secondary">
             <UploadIcon className="w-8 h-8 mb-2" />
             <p>Drag & drop files or <span className="text-brand-accent font-semibold">click to browse</span></p>
-            <p className="text-xs mt-1">Supported: .txt, .md, .json, .html</p>
+            <p className="text-xs mt-1">Supported: .txt, .md, .json, .html, .pdf</p>
           </div>
         </div>
         {files.length > 0 && (
