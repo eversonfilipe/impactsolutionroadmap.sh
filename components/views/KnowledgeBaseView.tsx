@@ -5,14 +5,22 @@ import { AppView } from '../../App';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 
+/**
+ * Props for the KnowledgeBaseView component.
+ * @interface
+ */
 interface KnowledgeBaseViewProps {
+    /** Function to set the active roadmap in the main App component. */
     setActiveRoadmap: (roadmap: Roadmap | null) => void;
+    /** Function to change the active view in the main App component. */
     setActiveView: (view: AppView) => void;
 }
 
 /**
  * The view for the Collaborative Knowledge Base. It allows users to ask the AI expert
  * questions about ESG topics and to generate roadmap templates on the fly.
+ * @param {KnowledgeBaseViewProps} props - The props for the component.
+ * @returns {React.ReactElement} The rendered KnowledgeBaseView.
  */
 const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ setActiveRoadmap, setActiveView }) => {
     const [question, setQuestion] = useState('');
@@ -23,6 +31,10 @@ const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ setActiveRoadmap,
     const [templatePrompt, setTemplatePrompt] = useState('');
     const [isLoadingTemplate, setIsLoadingTemplate] = useState(false);
     
+    /**
+     * Handles the form submission for asking an ESG question.
+     * @param {React.FormEvent} e - The form submission event.
+     */
     const handleAskQuestion = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!question.trim()) return;
@@ -45,6 +57,11 @@ const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ setActiveRoadmap,
         });
     };
 
+    /**
+     * Handles the form submission for generating a roadmap template.
+     * It calls the main roadmap generation service and then switches the view.
+     * @param {React.FormEvent} e - The form submission event.
+     */
     const handleGenerateTemplate = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!templatePrompt.trim()) return;
@@ -94,6 +111,11 @@ const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ setActiveRoadmap,
         });
     };
 
+    /**
+     * Safely renders a Markdown string into HTML.
+     * @param {string} markdown - The markdown content to render.
+     * @returns {React.ReactElement} A div containing the sanitized HTML.
+     */
     const renderMarkdown = (markdown: string) => {
         const raw = marked.parse(markdown, { gfm: true, breaks: true });
         const clean = DOMPurify.sanitize(raw as string);

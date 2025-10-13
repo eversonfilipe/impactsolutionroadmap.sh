@@ -2,6 +2,7 @@ import React from 'react';
 
 /**
  * Props for the StreamingResponseDisplay component.
+ * @interface
  */
 interface StreamingResponseDisplayProps {
   /** The raw text streamed from the AI so far. */
@@ -12,6 +13,8 @@ interface StreamingResponseDisplayProps {
  * A component to display the real-time streamed response from the AI.
  * It provides a "live typing" effect that gives the user immediate feedback
  * that the AI is working and generating their roadmap.
+ * @param {StreamingResponseDisplayProps} props - The props for the component.
+ * @returns {React.ReactElement} The rendered StreamingResponseDisplay component.
  */
 const StreamingResponseDisplay: React.FC<StreamingResponseDisplayProps> = ({ text }) => {
   return (

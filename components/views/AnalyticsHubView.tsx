@@ -5,10 +5,21 @@ import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 
 /**
+ * Props for the KpiCard component.
+ * @interface
+ */
+interface KpiCardProps {
+    /** The metric object to display. */
+    metric: EsgMetric;
+}
+
+/**
  * A reusable card component to display a single Key Performance Indicator (KPI).
  * It uses color-coding to distinguish between ESG categories.
+ * @param {KpiCardProps} props - The props for the component.
+ * @returns {React.ReactElement} The rendered KpiCard.
  */
-const KpiCard: React.FC<{ metric: EsgMetric }> = ({ metric }) => {
+const KpiCard: React.FC<KpiCardProps> = ({ metric }) => {
     const categoryColor = {
         Environmental: 'border-green-500',
         Social: 'border-blue-500',
@@ -27,6 +38,7 @@ const KpiCard: React.FC<{ metric: EsgMetric }> = ({ metric }) => {
 
 /**
  * A skeleton loader component to provide visual feedback during the analysis generation.
+ * @returns {React.ReactElement} The rendered skeleton loader.
  */
 const AnalyticsSkeletonLoader: React.FC = () => (
     <div className="space-y-6 animate-pulse mt-8">
@@ -58,6 +70,7 @@ const AnalyticsSkeletonLoader: React.FC = () => (
 /**
  * The main view for the ESG Analytics Hub. It allows users to input a project description
  * and view a comprehensive, AI-generated ESG analysis dashboard.
+ * @returns {React.ReactElement} The rendered AnalyticsHubView.
  */
 const AnalyticsHubView: React.FC = () => {
     const [description, setDescription] = useState('');
@@ -65,6 +78,10 @@ const AnalyticsHubView: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [report, setReport] = useState<AnalyticsReport | null>(null);
 
+    /**
+     * Handles the form submission to generate an ESG report.
+     * @param {React.FormEvent} e - The form event.
+     */
     const handleGenerate = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!description.trim()) {
@@ -85,6 +102,11 @@ const AnalyticsHubView: React.FC = () => {
         }
     };
     
+    /**
+     * Safely renders a Markdown string as HTML.
+     * @param {string} markdown - The markdown string to render.
+     * @returns {React.ReactElement} A div element with the rendered HTML.
+     */
     const renderMarkdown = (markdown: string) => {
         const raw = marked.parse(markdown, { gfm: true, breaks: true });
         const clean = DOMPurify.sanitize(raw as string);

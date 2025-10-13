@@ -16,7 +16,9 @@ type ReportTab = 'summary' | 'checklist' | 'matrix' | 'document';
 
 /**
  * The main view for the Smart Compliance Engine. It enables users to select a regulation,
- * provide context, and receive a comprehensive, AI-generated compliance package.
+ * provide context, and receive a comprehensive, AI-generated compliance package,
+ * displayed in an intuitive tabbed interface.
+ * @returns {React.ReactElement} The rendered ComplianceEngineView.
  */
 const ComplianceEngineView: React.FC = () => {
     const [context, setContext] = useState('');
@@ -26,6 +28,10 @@ const ComplianceEngineView: React.FC = () => {
     const [report, setReport] = useState<ComplianceReport | null>(null);
     const [activeTab, setActiveTab] = useState<ReportTab>('summary');
 
+    /**
+     * Handles the form submission to generate the compliance package.
+     * @param {React.FormEvent} e - The form submission event.
+     */
     const handleGenerate = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!context.trim()) {
@@ -47,6 +53,11 @@ const ComplianceEngineView: React.FC = () => {
         }
     };
 
+    /**
+     * Safely renders a Markdown string as HTML using marked and DOMPurify.
+     * @param {string} markdown - The markdown string to render.
+     * @returns {React.ReactElement | null} A div with the rendered HTML, or null if input is empty.
+     */
     const renderMarkdown = (markdown: string) => {
         if (!markdown) return null;
         const raw = marked.parse(markdown, { gfm: true, breaks: true });

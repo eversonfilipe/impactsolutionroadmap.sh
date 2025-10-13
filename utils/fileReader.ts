@@ -6,8 +6,8 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dis
 
 /**
  * Reads a PDF file and extracts its text content from all pages.
- * @param file - The PDF file to read.
- * @returns A promise that resolves to the full text content of the PDF.
+ * @param {File} file - The PDF file to read.
+ * @returns {Promise<string>} A promise that resolves to the full text content of the PDF.
  */
 const readPdfAsText = async (file: File): Promise<string> => {
     const arrayBuffer = await file.arrayBuffer();
@@ -30,8 +30,8 @@ const readPdfAsText = async (file: File): Promise<string> => {
  * This is used to prepare user-uploaded context files to be sent to the AI.
  * It now supports both text-based files and PDFs.
  * 
- * @param files - An array of `File` objects, typically from an `<input type="file">` element.
- * @returns A promise that resolves to a single string containing the content of all files,
+ * @param {File[]} files - An array of `File` objects, typically from an `<input type="file">` element.
+ * @returns {Promise<string>} A promise that resolves to a single string containing the content of all files,
  *          with each file's content wrapped in a separator that includes its name.
  */
 export const readFilesAsText = (files: File[]): Promise<string> => {

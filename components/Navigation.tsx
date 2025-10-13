@@ -6,18 +6,40 @@ import { AnalyticsIcon } from './icons/AnalyticsIcon';
 import { KnowledgeIcon } from './icons/KnowledgeIcon';
 import { ComplianceIcon } from './icons/ComplianceIcon';
 
+/**
+ * Props for the main Navigation component.
+ * @interface
+ */
 interface NavigationProps {
+  /** The currently active view. */
   activeView: AppView;
+  /** Function to set the active view. */
   setActiveView: (view: AppView) => void;
+  /** Function to toggle the visibility of the history panel. */
   onToggleHistory: () => void;
 }
 
-const NavButton: React.FC<{
+/**
+ * Props for the internal NavButton component.
+ * @interface
+ */
+interface NavButtonProps {
+  /** The text label for the button. */
   label: string;
+  /** The icon element to display. */
   icon: React.ReactNode;
+  /** Whether this button represents the currently active view. */
   isActive: boolean;
+  /** The click handler for the button. */
   onClick: () => void;
-}> = ({ label, icon, isActive, onClick }) => (
+}
+
+/**
+ * A reusable, styled button component for the main navigation tabs.
+ * @param {NavButtonProps} props - The props for the component.
+ * @returns {React.ReactElement} The rendered NavButton.
+ */
+const NavButton: React.FC<NavButtonProps> = ({ label, icon, isActive, onClick }) => (
   <button
     onClick={onClick}
     className={`flex-1 sm:flex-none flex sm:flex-row flex-col items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-md transition-colors duration-200 ${
@@ -34,7 +56,9 @@ const NavButton: React.FC<{
 
 /**
  * The main navigation component for the application.
- * Renders tabs to switch between the different feature views.
+ * Renders tabs to switch between the different feature views and a button to toggle the history panel.
+ * @param {NavigationProps} props - The props for the component.
+ * @returns {React.ReactElement} The rendered Navigation component.
  */
 const Navigation: React.FC<NavigationProps> = ({ activeView, setActiveView, onToggleHistory }) => {
   return (

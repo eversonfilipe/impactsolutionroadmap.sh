@@ -3,6 +3,7 @@ import { UploadIcon } from './icons/UploadIcon';
 
 /**
  * Props for the PromptForm component.
+ * @interface
  */
 interface PromptFormProps {
   /** The function to call when the form is submitted for generation. */
@@ -15,6 +16,8 @@ interface PromptFormProps {
  * A form component that allows the user to input their main prompt
  * and upload optional context files. It handles the UI for user input
  * before triggering the roadmap generation process.
+ * @param {PromptFormProps} props - The props for the component.
+ * @returns {React.ReactElement} The rendered PromptForm component.
  */
 const PromptForm: React.FC<PromptFormProps> = ({ onGenerate, isLoading }) => {
   /** State to hold the value of the main prompt textarea. */
@@ -24,6 +27,7 @@ const PromptForm: React.FC<PromptFormProps> = ({ onGenerate, isLoading }) => {
 
   /**
    * Handles changes to the file input element, updating the files state.
+   * @param {React.ChangeEvent<HTMLInputElement>} event - The file input change event.
    */
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -34,6 +38,7 @@ const PromptForm: React.FC<PromptFormProps> = ({ onGenerate, isLoading }) => {
   /**
    * Handles the form submission, preventing the default action and calling
    * the onGenerate prop with the current prompt and files.
+   * @param {React.FormEvent} event - The form submission event.
    */
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();

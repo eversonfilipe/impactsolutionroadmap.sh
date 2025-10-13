@@ -22,6 +22,7 @@ const LOCAL_STORAGE_HISTORY_KEY = 'impact_roadmaps_history';
  * The main application component. It orchestrates the entire user flow,
  * managing state for the active roadmap, generation process, and user's history,
  * and routing between the different feature views.
+ * @returns {React.ReactElement} The rendered App component.
  */
 const App: React.FC = () => {
   /**
@@ -77,7 +78,7 @@ const App: React.FC = () => {
 
   /**
    * A helper function to update the roadmap history state and persist it to local storage.
-   * @param newHistory - The new history array to save.
+   * @param {Roadmap[]} newHistory - The new history array to save.
    */
   const updateHistory = (newHistory: Roadmap[]) => {
     setRoadmapHistory(newHistory);
@@ -105,7 +106,7 @@ const App: React.FC = () => {
 
   /**
    * Loads a selected roadmap from the history into the active view.
-   * @param id - The ID of the roadmap to load.
+   * @param {string} id - The ID of the roadmap to load.
    */
   const handleLoadRoadmap = (id: string) => {
     const roadmapToLoad = roadmapHistory.find(r => r.id === id);
@@ -118,7 +119,7 @@ const App: React.FC = () => {
   
   /**
    * Deletes a roadmap from the history.
-   * @param id - The ID of the roadmap to delete.
+   * @param {string} id - The ID of the roadmap to delete.
    */
   const handleDeleteRoadmap = (id: string) => {
     const newHistory = roadmapHistory.filter(r => r.id !== id);
@@ -132,7 +133,7 @@ const App: React.FC = () => {
   /**
    * Toggles the completion status of a single node within the active roadmap.
    * Also updates the history if the active roadmap has been saved.
-   * @param nodeId - The ID of the node to toggle.
+   * @param {string} nodeId - The ID of the node to toggle.
    */
   const handleToggleNodeCompletion = useCallback((nodeId: string) => {
     if (!activeRoadmap) return;

@@ -2,6 +2,7 @@ import React from 'react';
 
 /**
  * Props for the ProgressBar component.
+ * @interface
  */
 interface ProgressBarProps {
   /** The progress percentage, from 0 to 100. */
@@ -10,7 +11,9 @@ interface ProgressBarProps {
 
 /**
  * A simple, reusable component to display a visual progress bar.
- * It shows the completion percentage of the active roadmap.
+ * It shows the completion percentage of the active roadmap and is accessible.
+ * @param {ProgressBarProps} props - The props for the component.
+ * @returns {React.ReactElement} The rendered ProgressBar component.
  */
 const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => {
   const roundedProgress = Math.round(progress);

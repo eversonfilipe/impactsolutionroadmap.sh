@@ -23,8 +23,10 @@ interface StreamCallbacks {
 /**
  * A helper function to safely parse JSON from a string,
  * cleaning it of markdown wrappers first.
- * @param text The raw text from the AI.
- * @returns A parsed JSON object.
+ * @param {string} text The raw text from the AI.
+ * @returns {T} A parsed JSON object.
+ * @template T The expected type of the parsed JSON object.
+ * @throws {Error} If JSON cannot be extracted from the text.
  */
 const safeJsonParse = <T>(text: string): T => {
     let jsonText = text.trim();
@@ -46,9 +48,10 @@ const safeJsonParse = <T>(text: string): T => {
  * This approach provides real-time feedback to the user, showing the AI's response
  * as it's being constructed.
  * 
- * @param userPrompt - The main prompt from the user describing the desired roadmap.
- * @param context - A string containing additional context from user-uploaded files.
- * @param callbacks - An object containing onChunk, onComplete, and onError callbacks to handle the stream.
+ * @param {string} userPrompt - The main prompt from the user describing the desired roadmap.
+ * @param {string} context - A string containing additional context from user-uploaded files.
+ * @param {StreamCallbacks} callbacks - An object containing onChunk, onComplete, and onError callbacks to handle the stream.
+ * @returns {Promise<void>} A promise that resolves when the streaming is complete or an error occurs.
  */
 export const generateRoadmapStream = async (
   userPrompt: string, 
@@ -129,9 +132,9 @@ export const generateRoadmapStream = async (
 /**
  * Parses the final, streamed text to extract the roadmap JSON.
  * 
- * @param fullText - The complete string response from the AI after the stream has ended.
- * @returns The parsed `GeneratedRoadmap` object.
- * @throws An error if JSON cannot be extracted or parsed.
+ * @param {string} fullText - The complete string response from the AI after the stream has ended.
+ * @returns {GeneratedRoadmap} The parsed `GeneratedRoadmap` object.
+ * @throws {Error} An error if JSON cannot be extracted or parsed, or if the structure is invalid.
  */
 export const processStreamedResponse = (fullText: string): GeneratedRoadmap => {
     const roadmapData = safeJsonParse<Omit<GeneratedRoadmap, 'sources'>>(fullText);
@@ -143,8 +146,8 @@ export const processStreamedResponse = (fullText: string): GeneratedRoadmap => {
 
 /**
  * Generates an ESG analytics report using a non-streaming call to the Gemini API.
- * @param projectDescription - A description of the project or organization.
- * @returns A promise that resolves to an `AnalyticsReport` object.
+ * @param {string} projectDescription - A description of the project or organization.
+ * @returns {Promise<AnalyticsReport>} A promise that resolves to an `AnalyticsReport` object.
  */
 export const generateAnalyticsReport = async (projectDescription: string): Promise<AnalyticsReport> => {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
@@ -205,8 +208,9 @@ export const generateAnalyticsReport = async (projectDescription: string): Promi
 
 /**
  * Answers a user's question about ESG using a streaming response.
- * @param question - The user's question.
- * @param callbacks - Callbacks to handle the streaming response.
+ * @param {string} question - The user's question.
+ * @param {StreamCallbacks} callbacks - Callbacks to handle the streaming response.
+ * @returns {Promise<void>} A promise that resolves when the stream is complete.
  */
 export const answerEsgQuestion = async (question: string, callbacks: StreamCallbacks): Promise<void> => {
     try {
@@ -237,9 +241,9 @@ export const answerEsgQuestion = async (question: string, callbacks: StreamCallb
 
 /**
  * Generates an ESG compliance report for a given regulation and context.
- * @param regulation - The name of the ESG regulation (e.g., "CSRD").
- * @param context - A description of the user's organization.
- * @returns A promise that resolves to a `ComplianceReport` object.
+ * @param {string} regulation - The name of the ESG regulation (e.g., "CSRD").
+ * @param {string} context - A description of the user's organization.
+ * @returns {Promise<ComplianceReport>} A promise that resolves to a `ComplianceReport` object.
  */
 export const generateComplianceReport = async (regulation: string, context: string): Promise<ComplianceReport> => {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });

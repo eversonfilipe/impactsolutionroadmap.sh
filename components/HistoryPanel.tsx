@@ -4,6 +4,7 @@ import { TrashIcon } from './icons/TrashIcon';
 
 /**
  * Props for the HistoryPanel component.
+ * @interface
  */
 interface HistoryPanelProps {
   /** An array of saved roadmap objects. */
@@ -19,6 +20,8 @@ interface HistoryPanelProps {
 /**
  * A slide-in panel component that displays a list of saved roadmaps.
  * It allows users to load, delete, and manage their roadmap history.
+ * @param {HistoryPanelProps} props - The props for the component.
+ * @returns {React.ReactElement} The rendered HistoryPanel component.
  */
 const HistoryPanel: React.FC<HistoryPanelProps> = ({ history, onLoad, onDelete, onClose }) => {
   return (

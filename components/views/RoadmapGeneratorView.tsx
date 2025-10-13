@@ -6,16 +6,28 @@ import PromptForm from '../PromptForm';
 import RoadmapDisplay from '../RoadmapDisplay';
 import StreamingResponseDisplay from '../StreamingResponseDisplay';
 
+/**
+ * Props for the RoadmapGeneratorView component.
+ * @interface
+ */
 interface RoadmapGeneratorViewProps {
+  /** The currently active roadmap object, or null if none is active. */
   activeRoadmap: Roadmap | null;
+  /** Function to set the active roadmap in the parent component. */
   setActiveRoadmap: (roadmap: Roadmap | null) => void;
+  /** The user's saved roadmap history. */
   roadmapHistory: Roadmap[];
+  /** Callback function to trigger saving or updating the active roadmap. */
   onSaveOrUpdateRoadmap: () => void;
+  /** Callback function to toggle the completion status of a roadmap node. */
   onToggleNodeCompletion: (nodeId: string) => void;
 }
 
 /**
  * A view component dedicated to the core functionality of generating and displaying roadmaps.
+ * It manages the UI and state for the entire roadmap creation lifecycle.
+ * @param {RoadmapGeneratorViewProps} props - The props for the component.
+ * @returns {React.ReactElement} The rendered RoadmapGeneratorView.
  */
 const RoadmapGeneratorView: React.FC<RoadmapGeneratorViewProps> = ({
   activeRoadmap,
@@ -31,8 +43,8 @@ const RoadmapGeneratorView: React.FC<RoadmapGeneratorViewProps> = ({
   /**
    * Handles the entire roadmap generation process, from reading files to calling the AI service
    * and processing the streamed response.
-   * @param prompt - The user's primary goal for the roadmap.
-   * @param files - An array of context files uploaded by the user.
+   * @param {string} prompt - The user's primary goal for the roadmap.
+   * @param {File[]} files - An array of context files uploaded by the user.
    */
   const handleGenerate = useCallback(async (prompt: string, files: File[]) => {
     if (!prompt.trim()) {

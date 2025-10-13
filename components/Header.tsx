@@ -4,6 +4,7 @@ import { InstallAppIcon } from './icons/InstallAppIcon';
 
 /**
  * Props for the Header component.
+ * @interface
  */
 interface HeaderProps {
     /** Callback function to trigger the PWA installation prompt. */
@@ -14,8 +15,10 @@ interface HeaderProps {
 
 /**
  * The main header component for the application.
- * It displays the project title and provides navigation controls like
- * opening the history panel and linking to the GitHub repository.
+ * It displays the project title and provides top-level actions like installing the app
+ * and linking to the source code repository.
+ * @param {HeaderProps} props - The props for the component.
+ * @returns {React.ReactElement} The rendered Header component.
  */
 const Header: React.FC<HeaderProps> = ({ onInstall, showInstallButton }) => {
   return (

@@ -7,18 +7,41 @@ import { SaveIcon } from './icons/SaveIcon';
 import { CheckCircleIcon } from './icons/CheckCircleIcon';
 import ProgressBar from './ProgressBar';
 
+/**
+ * Props for the RoadmapDisplay component.
+ * @interface
+ */
 interface RoadmapDisplayProps {
+  /** The roadmap object to display. */
   roadmap: Roadmap;
+  /** Callback function to save the roadmap. */
   onSave: () => void;
+  /** Callback function to toggle the completion status of a node. */
   onToggleNodeCompletion: (nodeId: string) => void;
+  /** A boolean indicating if the roadmap is currently saved in the history. */
   isSaved: boolean;
+}
+
+/**
+ * Props for the NodeCard sub-component.
+ * @interface
+ */
+interface NodeCardProps {
+    /** The node object to render. */
+    node: RoadmapNode;
+    /** An array of all nodes in the roadmap, used to look up connection titles. */
+    allNodes: RoadmapNode[];
+    /** Callback function to toggle the node's completion status. */
+    onToggleCompletion: (id: string) => void;
 }
 
 /**
  * A sub-component to render a single node within the roadmap.
  * It handles displaying the node's title, content (as sanitized HTML), references, and connections.
+ * @param {NodeCardProps} props - The props for the component.
+ * @returns {React.ReactElement} The rendered NodeCard.
  */
-const NodeCard: React.FC<{ node: RoadmapNode; allNodes: RoadmapNode[]; onToggleCompletion: (id: string) => void }> = ({ node, allNodes, onToggleCompletion }) => {
+const NodeCard: React.FC<NodeCardProps> = ({ node, allNodes, onToggleCompletion }) => {
   
   // Find the titles of the nodes this node connects to for a more user-friendly display.
   const connectionTitles = node.connections
@@ -82,26 +105,28 @@ const NodeCard: React.FC<{ node: RoadmapNode; allNodes: RoadmapNode[]; onToggleC
  * The main component for displaying a generated roadmap.
  * It renders the roadmap's title, description, progress, sources, and all its nodes.
  * It also provides functionality for saving and downloading the roadmap.
+ * @param {RoadmapDisplayProps} props - The props for the component.
+ * @returns {React.ReactElement} The rendered RoadmapDisplay component.
  */
 const RoadmapDisplay: React.FC<RoadmapDisplayProps> = ({ roadmap, onSave, onToggleNodeCompletion, isSaved }) => {
 
   /**
    * Generates a string of the entire roadmap in Markdown format.
-   * @param roadmap - The roadmap object to convert.
-   * @returns A string containing the roadmap in Markdown format.
+   * @param {Roadmap} roadmapToConvert - The roadmap object to convert.
+   * @returns {string} A string containing the roadmap in Markdown format.
    */
-  const generateMarkdownContent = (roadmap: Roadmap): string => {
-    let markdown = `# ${roadmap.title}\n\n`;
-    markdown += `${roadmap.description}\n\n`;
+  const generateMarkdownContent = (roadmapToConvert: Roadmap): string => {
+    let markdown = `# ${roadmapToConvert.title}\n\n`;
+    markdown += `${roadmapToConvert.description}\n\n`;
     markdown += '---\n\n';
 
-    if (roadmap.sources && roadmap.sources.length > 0) {
+    if (roadmapToConvert.sources && roadmapToConvert.sources.length > 0) {
       markdown += `### Grounding Sources\n`;
-      roadmap.sources.forEach(source => markdown += `- [${source.title}](${source.uri})\n`);
+      roadmapToConvert.sources.forEach(source => markdown += `- [${source.title}](${source.uri})\n`);
       markdown += `\n---\n\n`;
     }
 
-    roadmap.nodes.forEach(node => {
+    roadmapToConvert.nodes.forEach(node => {
       markdown += `## ${node.completed ? '[x]' : '[ ]'} ${node.title}\n\n`;
       markdown += `**ID:** \`${node.id}\`\n\n`;
       markdown += `${node.content}\n\n`;
@@ -113,7 +138,7 @@ const RoadmapDisplay: React.FC<RoadmapDisplayProps> = ({ roadmap, onSave, onTogg
       }
 
       if (node.connections && node.connections.length > 0) {
-        const connectionTitles = node.connections.map(connId => roadmap.nodes.find(n => n.id === connId)?.title).filter(Boolean);
+        const connectionTitles = node.connections.map(connId => roadmapToConvert.nodes.find(n => n.id === connId)?.title).filter(Boolean);
         if (connectionTitles.length > 0) {
             markdown += `### Connects To\n`;
             connectionTitles.forEach(title => markdown += `- ${title}\n`);
