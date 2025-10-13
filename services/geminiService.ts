@@ -21,27 +21,47 @@ interface StreamCallbacks {
 }
 
 /**
- * A helper function to safely parse JSON from a string,
- * cleaning it of markdown wrappers first.
+ * A helper function to safely parse JSON from a string. It's designed to be
+ * resilient, handling responses that might be wrapped in markdown code fences
+ * or have conversational text around the JSON object.
+ * 
  * @param {string} text The raw text from the AI.
  * @returns {T} A parsed JSON object.
  * @template T The expected type of the parsed JSON object.
- * @throws {Error} If JSON cannot be extracted from the text.
+ * @throws {Error} If a valid JSON object cannot be extracted or parsed from the text.
  */
 const safeJsonParse = <T>(text: string): T => {
-    let jsonText = text.trim();
-    // This regex is more robust and handles optional "json" language identifier.
-    const jsonMatch = jsonText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-    if (jsonMatch && jsonMatch[1]) {
-        jsonText = jsonMatch[1];
+    // Attempt to find JSON within markdown code fences.
+    // This regex looks for ```json or ```, followed by any characters (non-greedy), and a closing ```.
+    const match = text.match(/```(?:json)?\s*([\s\S]+?)\s*```/);
+
+    let jsonText;
+    if (match && match[1]) {
+        // If we found a markdown block, use its content.
+        jsonText = match[1];
+    } else {
+        // If no markdown block is found, assume the whole text might be JSON,
+        // or JSON is embedded in it. We'll find the first '{' and last '}'
+        // to be more resilient to conversational text around the object.
+        const firstBrace = text.indexOf('{');
+        const lastBrace = text.lastIndexOf('}');
+        
+        if (firstBrace !== -1 && lastBrace > firstBrace) {
+            jsonText = text.substring(firstBrace, lastBrace + 1);
+        } else {
+            // If we can't find even a basic object structure, we have to fail.
+             throw new Error("Could not extract a valid JSON object from the AI's response.");
+        }
     }
 
-    if (!jsonText) {
-      throw new Error("Could not extract JSON from the AI's final response.");
+    try {
+        return JSON.parse(jsonText) as T;
+    } catch (e) {
+        console.error("Failed to parse extracted JSON text:", jsonText);
+        throw new Error(`AI returned a malformed JSON response. The model's output could not be parsed. Original text: ${text}`);
     }
-    
-    return JSON.parse(jsonText) as T;
 }
+
 
 /**
  * The unified, professional persona for the AI across the entire application.
@@ -170,7 +190,6 @@ export const generateAnalyticsReport = async (projectDescription: string): Promi
         ---
 
         **Required JSON Schema:**
-        \`\`\`json
         {
           "overallScore": 100,
           "summary": "A concise, professional summary of the ESG analysis.",
@@ -195,7 +214,6 @@ export const generateAnalyticsReport = async (projectDescription: string): Promi
           "draftReportMarkdown": "A well-structured draft of a simple ESG report in Markdown format, including sections for each ESG pillar.",
           "recommendations": "A list of 3-5 actionable recommendations for improving the project's ESG performance, in Markdown format."
         }
-        \`\`\`
     `;
 
     const response = await ai.models.generateContent({
@@ -266,7 +284,6 @@ export const generateComplianceReport = async (regulation: string, context: stri
         ---
 
         **Required JSON Schema:**
-        \`\`\`json
         {
           "regulation": "The full name of the regulation.",
           "summaryOfObligations": "A high-level summary of the key obligations under this regulation for an organization of this type, in Markdown format.",
@@ -275,7 +292,6 @@ export const generateComplianceReport = async (regulation: string, context: stri
           "draftDocumentMarkdown": "A draft of a key compliance document (e.g., a policy statement or disclosure section) relevant to the regulation, in Markdown format.",
           "materialityMatrixMarkdown": "An AI-generated materiality matrix in a Markdown table format, identifying and prioritizing relevant ESG topics."
         }
-        \`\`\`
     `;
 
     const response = await ai.models.generateContent({
