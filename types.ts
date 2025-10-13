@@ -86,6 +86,8 @@ export interface AnalyticsReport {
   metrics: EsgMetric[];
   /** A generated draft of a sustainability report in Markdown format. */
   draftReportMarkdown: string;
+  /** Actionable recommendations based on the analysis, in Markdown format. */
+  recommendations: string;
 }
 
 
@@ -95,6 +97,8 @@ export interface AnalyticsReport {
 export interface ComplianceReport {
     /** The regulation the report is for. */
     regulation: string;
+    /** A high-level summary of the key obligations under the regulation, in Markdown format. */
+    summaryOfObligations: string;
     /** A detailed compliance checklist in Markdown format. */
     checklistMarkdown: string;
     /** A generated draft of a key document in Markdown format. */

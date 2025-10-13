@@ -10,6 +10,10 @@ interface KnowledgeBaseViewProps {
     setActiveView: (view: AppView) => void;
 }
 
+/**
+ * The view for the Collaborative Knowledge Base. It allows users to ask the AI expert
+ * questions about ESG topics and to generate roadmap templates on the fly.
+ */
 const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ setActiveRoadmap, setActiveView }) => {
     const [question, setQuestion] = useState('');
     const [isLoadingAnswer, setIsLoadingAnswer] = useState(false);
@@ -50,6 +54,8 @@ const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ setActiveRoadmap,
 
         const fullPrompt = `Create a roadmap template for the following request: "${templatePrompt}"`;
 
+        // This uses the main roadmap generation stream but directs the output
+        // to the main roadmap view, creating a seamless template-to-roadmap workflow.
         await generateRoadmapStream(fullPrompt, '', {
             onChunk: () => {}, // We don't need to show the stream here
             onComplete: (fullText) => {
@@ -91,7 +97,7 @@ const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ setActiveRoadmap,
     const renderMarkdown = (markdown: string) => {
         const raw = marked.parse(markdown, { gfm: true, breaks: true });
         const clean = DOMPurify.sanitize(raw as string);
-        return <div className="prose prose-invert prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: clean }} />;
+        return <div className="prose prose-invert prose-sm max-w-none text-brand-text-secondary" dangerouslySetInnerHTML={{ __html: clean }} />;
     };
 
     return (
@@ -110,27 +116,27 @@ const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ setActiveRoadmap,
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Left side: Ask a question */}
-                <div className="space-y-4">
-                    <h3 className="text-lg font-semibold">Ask about ESG Methodologies</h3>
+                <div className="bg-brand-secondary p-6 rounded-lg border border-brand-border space-y-4">
+                    <h3 className="text-xl font-bold text-center">Ask the ESG Expert</h3>
                      <form onSubmit={handleAskQuestion} className="space-y-2">
-                        <input
-                          type="text"
+                        <textarea
                           value={question}
                           onChange={(e) => setQuestion(e.target.value)}
                           placeholder="e.g., 'Compare GRI and SASB standards for a tech company.'"
-                          className="w-full p-3 bg-brand-primary border border-brand-border rounded-md focus:outline-none focus:ring-2 focus:ring-brand-accent"
+                          className="w-full h-24 p-3 bg-brand-primary border border-brand-border rounded-md focus:outline-none focus:ring-2 focus:ring-brand-accent"
                           disabled={isLoadingAnswer}
+                          aria-label="Ask a question about ESG"
                         />
                         <button
                           type="submit"
                           disabled={isLoadingAnswer || !question.trim()}
                           className="w-full py-2 px-4 bg-brand-accent hover:bg-brand-accent-hover text-white font-bold rounded-md disabled:bg-gray-600"
                         >
-                            {isLoadingAnswer ? 'Thinking...' : 'Ask'}
+                            {isLoadingAnswer ? 'Thinking...' : 'Ask Question'}
                         </button>
                     </form>
                     {(isLoadingAnswer || answer) && (
-                        <div className="bg-brand-secondary p-4 rounded-lg border border-brand-border min-h-[200px]">
+                        <div className="bg-brand-primary p-4 rounded-lg border border-brand-border min-h-[200px] mt-4">
                             {renderMarkdown(answer)}
                             {isLoadingAnswer && <span className="blinking-cursor">|</span>}
                         </div>
@@ -138,32 +144,37 @@ const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ setActiveRoadmap,
                 </div>
 
                 {/* Right side: Generate a template */}
-                <div className="space-y-4">
-                     <h3 className="text-lg font-semibold">Generate a Roadmap Template</h3>
+                <div className="bg-brand-secondary p-6 rounded-lg border border-brand-border space-y-4">
+                     <h3 className="text-xl font-bold text-center">Generate a Roadmap Template</h3>
                      <form onSubmit={handleGenerateTemplate} className="space-y-2">
-                         <input
-                          type="text"
+                         <textarea
                           value={templatePrompt}
                           onChange={(e) => setTemplatePrompt(e.target.value)}
                           placeholder="e.g., 'An ESG roadmap for a small-scale coffee farm.'"
-                          className="w-full p-3 bg-brand-primary border border-brand-border rounded-md focus:outline-none focus:ring-2 focus:ring-brand-accent"
+                          className="w-full h-24 p-3 bg-brand-primary border border-brand-border rounded-md focus:outline-none focus:ring-2 focus:ring-brand-accent"
                           disabled={isLoadingTemplate}
+                          aria-label="Prompt for roadmap template"
                         />
                         <button
                           type="submit"
                           disabled={isLoadingTemplate || !templatePrompt.trim()}
                           className="w-full py-2 px-4 bg-brand-accent hover:bg-brand-accent-hover text-white font-bold rounded-md disabled:bg-gray-600"
                         >
-                            {isLoadingTemplate ? 'Generating...' : 'Generate Template'}
+                            {isLoadingTemplate ? 'Generating...' : 'Generate Template & Go'}
                         </button>
                     </form>
-                    <div className="text-sm text-brand-text-secondary p-4 bg-brand-secondary/50 rounded-md border border-brand-border">
+                    <div className="text-sm text-brand-text-secondary p-4 bg-brand-primary rounded-md border border-brand-border mt-4">
+                        <p className="font-semibold mb-1">How this works:</p>
                         <p>This will generate a new roadmap based on your request and take you to the "Roadmap Generator" tab. You can then edit, track, and save it as usual.</p>
                     </div>
                 </div>
             </div>
+             <p className="text-xs text-brand-text-secondary text-center pt-4">
+                For your privacy, please do not include sensitive personal information in your prompts.
+            </p>
              <style>{`
                 .blinking-cursor {
+                    font-weight: bold;
                     animation: blink 1s step-end infinite;
                 }
                 @keyframes blink {

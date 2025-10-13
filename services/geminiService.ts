@@ -28,6 +28,7 @@ interface StreamCallbacks {
  */
 const safeJsonParse = <T>(text: string): T => {
     let jsonText = text.trim();
+    // This regex is more robust and handles optional "json" language identifier.
     const jsonMatch = jsonText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
     if (jsonMatch && jsonMatch[1]) {
         jsonText = jsonMatch[1];
@@ -55,6 +56,9 @@ export const generateRoadmapStream = async (
   { onChunk, onComplete, onError }: StreamCallbacks
 ): Promise<void> => {
   try {
+    // This comment explains the rationale for the prompt structure, aiding open-source contributions.
+    // The prompt is engineered to be highly specific, providing the AI with a clear role, task, context, and a strict output format.
+    // This "Role-Task-Context-Format" structure is crucial for achieving consistent, high-quality JSON output.
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
     const schemaDefinition = `
@@ -155,22 +159,22 @@ export const generateAnalyticsReport = async (projectDescription: string): Promi
         ---
         `,
         config: {
-            systemInstruction: "You are a professional ESG analyst. Your task is to provide an estimated ESG analysis based on a user's project description. You must use your web search tool to find relevant data for estimations. Your entire output must be a single, valid JSON object adhering to the provided schema. Do not add any other text.",
+            systemInstruction: "You are a professional ESG analyst and sustainability consultant. Your task is to provide an estimated ESG analysis based on a user's project description. You must use your web search tool to find relevant data for estimations (e.g., industry benchmarks for emissions). Your entire output must be a single, valid JSON object adhering to the provided schema. Do not add any other text.",
             tools: [{googleSearch: {}}],
             responseMimeType: "application/json",
             responseSchema: {
                 type: Type.OBJECT,
                 properties: {
-                    overallScore: { type: Type.INTEGER, description: "An overall ESG score from 0 to 100." },
-                    summary: { type: Type.STRING, description: "A brief summary of the ESG analysis." },
+                    overallScore: { type: Type.INTEGER, description: "An overall ESG score from 0 to 100, reflecting the project's estimated impact." },
+                    summary: { type: Type.STRING, description: "A concise, professional summary of the ESG analysis." },
                     carbonFootprint: {
                         type: Type.OBJECT,
                         properties: {
-                            scope1: { type: Type.NUMBER, description: "Estimated Scope 1 emissions in tCO2e." },
+                            scope1: { type: Type.NUMBER, description: "Estimated Scope 1 emissions in tonnes of CO2 equivalent (tCO2e)." },
                             scope2: { type: Type.NUMBER, description: "Estimated Scope 2 emissions in tCO2e." },
                             scope3: { type: Type.NUMBER, description: "Estimated Scope 3 emissions in tCO2e." },
-                            unit: { type: Type.STRING, description: "Unit of measurement, e.g., 'tCO2e'."},
-                            methodology: { type: Type.STRING, description: "A brief explanation of the estimation methodology."}
+                            unit: { type: Type.STRING, description: "Unit of measurement, which must be 'tCO2e'."},
+                            methodology: { type: Type.STRING, description: "A brief, transparent explanation of the estimation methodology, citing any benchmarks used."}
                         },
                         required: ["scope1", "scope2", "scope3", "unit", "methodology"]
                     },
@@ -179,17 +183,18 @@ export const generateAnalyticsReport = async (projectDescription: string): Promi
                         items: {
                             type: Type.OBJECT,
                             properties: {
-                                name: { type: Type.STRING },
-                                value: { type: Type.STRING },
+                                name: { type: Type.STRING, description: "Name of a relevant ESG Key Performance Indicator (KPI)." },
+                                value: { type: Type.STRING, description: "An estimated value or benchmark for the KPI." },
                                 category: { type: Type.STRING, enum: ["Environmental", "Social", "Governance"] },
-                                insight: { type: Type.STRING }
+                                insight: { type: Type.STRING, description: "A brief insight or suggestion related to this metric." }
                             },
                              required: ["name", "value", "category", "insight"]
                         }
                     },
-                    draftReportMarkdown: { type: Type.STRING, description: "A draft ESG report in Markdown format." }
+                    draftReportMarkdown: { type: Type.STRING, description: "A well-structured draft of a simple ESG report in Markdown format, including sections for each ESG pillar." },
+                    recommendations: { type: Type.STRING, description: "A list of 3-5 actionable recommendations for improving the project's ESG performance, in Markdown format." }
                 },
-                required: ["overallScore", "summary", "carbonFootprint", "metrics", "draftReportMarkdown"]
+                required: ["overallScore", "summary", "carbonFootprint", "metrics", "draftReportMarkdown", "recommendations"]
             }
         }
     });
@@ -210,7 +215,7 @@ export const answerEsgQuestion = async (question: string, callbacks: StreamCallb
             model: "gemini-2.5-flash",
             contents: question,
             config: {
-                systemInstruction: "You are a world-class expert on ESG frameworks, methodologies, and best practices. Your mission is to provide clear, accurate, and comprehensive answers to user questions. You MUST use your web search tool to find and cite reliable, high-quality sources (academic papers, official documentation, reputable articles) in your response. Format your answer using rich Markdown.",
+                systemInstruction: "You are a world-class expert on ESG frameworks, methodologies, and best practices. Your mission is to provide clear, accurate, and comprehensive answers to user questions. You MUST use your web search tool to find and cite reliable, high-quality sources (academic papers, official documentation, reputable articles) in your response. Structure your answer in rich Markdown. Start with a 'Key Takeaways' section summarizing the main points before the full explanation.",
                 tools: [{googleSearch: {}}]
             }
         });
@@ -250,18 +255,19 @@ export const generateComplianceReport = async (regulation: string, context: stri
             ---
         `,
         config: {
-            systemInstruction: "You are a specialist in global ESG regulations. Based on the provided regulation and organizational context, generate a compliance package. Use your web search tool for specific details about the regulation. Your entire output must be a single JSON object adhering to the schema. Do not add any other text.",
+            systemInstruction: "You are a specialist in global ESG regulations and compliance. Based on the provided regulation and organizational context, generate a detailed compliance package. Use your web search tool for specific details about the regulation to ensure accuracy. Your entire output must be a single, valid JSON object adhering to the schema. Do not add any other text.",
             tools: [{googleSearch: {}}],
             responseMimeType: "application/json",
             responseSchema: {
                 type: Type.OBJECT,
                 properties: {
-                    regulation: { type: Type.STRING },
-                    checklistMarkdown: { type: Type.STRING, description: "A detailed compliance checklist in Markdown format."},
-                    draftDocumentMarkdown: { type: Type.STRING, description: "A draft of a key compliance document in Markdown format."},
-                    materialityMatrixMarkdown: { type: Type.STRING, description: "An AI-generated materiality matrix in Markdown table format."}
+                    regulation: { type: Type.STRING, description: "The full name of the regulation." },
+                    summaryOfObligations: { type: Type.STRING, description: "A high-level summary of the key obligations under this regulation for an organization of this type, in Markdown format."},
+                    checklistMarkdown: { type: Type.STRING, description: "A detailed, actionable compliance checklist in Markdown format, with steps organized logically."},
+                    draftDocumentMarkdown: { type: Type.STRING, description: "A draft of a key compliance document (e.g., a policy statement or disclosure section) relevant to the regulation, in Markdown format."},
+                    materialityMatrixMarkdown: { type: Type.STRING, description: "An AI-generated materiality matrix in a Markdown table format, identifying and prioritizing relevant ESG topics."}
                 },
-                required: ["regulation", "checklistMarkdown", "draftDocumentMarkdown", "materialityMatrixMarkdown"]
+                required: ["regulation", "summaryOfObligations", "checklistMarkdown", "draftDocumentMarkdown", "materialityMatrixMarkdown"]
             }
         }
     });

@@ -12,12 +12,19 @@ const regulations = [
     "GRI (Global Reporting Initiative)",
 ];
 
+type ReportTab = 'summary' | 'checklist' | 'matrix' | 'document';
+
+/**
+ * The main view for the Smart Compliance Engine. It enables users to select a regulation,
+ * provide context, and receive a comprehensive, AI-generated compliance package.
+ */
 const ComplianceEngineView: React.FC = () => {
     const [context, setContext] = useState('');
     const [selectedRegulation, setSelectedRegulation] = useState(regulations[0]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [report, setReport] = useState<ComplianceReport | null>(null);
+    const [activeTab, setActiveTab] = useState<ReportTab>('summary');
 
     const handleGenerate = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -31,6 +38,7 @@ const ComplianceEngineView: React.FC = () => {
         try {
             const result = await generateComplianceReport(selectedRegulation, context);
             setReport(result);
+            setActiveTab('summary'); // Reset to summary tab on new report
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An unknown error occurred.');
             console.error(err);
@@ -40,9 +48,10 @@ const ComplianceEngineView: React.FC = () => {
     };
 
     const renderMarkdown = (markdown: string) => {
+        if (!markdown) return null;
         const raw = marked.parse(markdown, { gfm: true, breaks: true });
         const clean = DOMPurify.sanitize(raw as string);
-        return <div className="prose prose-invert prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: clean }} />;
+        return <div className="prose prose-invert prose-sm max-w-none text-brand-text-secondary" dangerouslySetInnerHTML={{ __html: clean }} />;
     };
 
     return (
@@ -80,6 +89,9 @@ const ComplianceEngineView: React.FC = () => {
                         disabled={isLoading}
                     />
                 </div>
+                 <p className="text-xs text-brand-text-secondary text-center">
+                    For your privacy, please do not include sensitive personal information in your description.
+                </p>
                 <button
                     type="submit"
                     disabled={isLoading || !context.trim()}
@@ -97,22 +109,24 @@ const ComplianceEngineView: React.FC = () => {
             )}
 
             {report && (
-                 <div className="space-y-6 animate-fade-in mt-8">
-                    <h3 className="text-center text-2xl font-bold">Compliance Package for {report.regulation}</h3>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div className="bg-brand-secondary p-6 rounded-lg border border-brand-border">
-                           <h4 className="text-lg font-bold text-brand-accent mb-2">Compliance Checklist</h4>
-                           {renderMarkdown(report.checklistMarkdown)}
-                        </div>
-                         <div className="bg-brand-secondary p-6 rounded-lg border border-brand-border">
-                           <h4 className="text-lg font-bold text-brand-accent mb-2">Materiality Matrix</h4>
-                           {renderMarkdown(report.materialityMatrixMarkdown)}
-                        </div>
+                 <div className="space-y-4 animate-fade-in mt-8 bg-brand-secondary p-6 rounded-lg border border-brand-border">
+                    <h3 className="text-center text-xl font-bold">Compliance Package for: <span className="text-brand-accent">{report.regulation}</span></h3>
+                    
+                    {/* Tab Navigation */}
+                    <div className="flex border-b border-brand-border">
+                        <button onClick={() => setActiveTab('summary')} className={`px-4 py-2 text-sm font-semibold ${activeTab === 'summary' ? 'border-b-2 border-brand-accent text-brand-accent' : 'text-brand-text-secondary'}`}>Summary</button>
+                        <button onClick={() => setActiveTab('checklist')} className={`px-4 py-2 text-sm font-semibold ${activeTab === 'checklist' ? 'border-b-2 border-brand-accent text-brand-accent' : 'text-brand-text-secondary'}`}>Checklist</button>
+                        <button onClick={() => setActiveTab('matrix')} className={`px-4 py-2 text-sm font-semibold ${activeTab === 'matrix' ? 'border-b-2 border-brand-accent text-brand-accent' : 'text-brand-text-secondary'}`}>Materiality Matrix</button>
+                        <button onClick={() => setActiveTab('document')} className={`px-4 py-2 text-sm font-semibold ${activeTab === 'document' ? 'border-b-2 border-brand-accent text-brand-accent' : 'text-brand-text-secondary'}`}>Draft Document</button>
                     </div>
-                     <div className="bg-brand-secondary p-6 rounded-lg border border-brand-border">
-                           <h4 className="text-lg font-bold text-brand-accent mb-2">Draft Compliance Document</h4>
-                           {renderMarkdown(report.draftDocumentMarkdown)}
-                        </div>
+
+                    {/* Tab Content */}
+                    <div className="pt-4">
+                        {activeTab === 'summary' && renderMarkdown(report.summaryOfObligations)}
+                        {activeTab === 'checklist' && renderMarkdown(report.checklistMarkdown)}
+                        {activeTab === 'matrix' && renderMarkdown(report.materialityMatrixMarkdown)}
+                        {activeTab === 'document' && renderMarkdown(report.draftDocumentMarkdown)}
+                    </div>
                  </div>
             )}
         </div>
