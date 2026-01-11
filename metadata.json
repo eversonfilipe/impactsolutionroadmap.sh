@@ -1,5 +1,37 @@
 {
-  "name": "ImpactSolutionRoadmap.sh",
-  "description": "ccAn open-source AI-powered platform to generate professional roadmaps for social and environmental impact projects. Users provide prompts and context to create detailed, actionable blueprints, fostering innovation for good.",
-  "requestFramePermissions": []
+    "metadata": {
+        "aboutProject": {
+            "name": "Impact Solution Roadmap",
+            "author": "Éverson Filipe",
+            "aboutAuthor": {
+                "email": "eversonfilipe124@gmail.com",
+                "github": "https://github.com/eversonfilipe",
+                "linkedin": "https://www.linkedin.com/in/eversonfilipe-agile-products-ai/"
+            },
+            "projectDescription": {
+                "description": {
+                    "pt-br": "Plataforma avançada de geração de roadmaps estratégicos que utiliza a API Gemini para transformar requisitos complexos em planos de ação estruturados, incluindo análise de conformidade e arquitetura técnica.",
+                    "en": "Advanced strategic roadmap generation platform leveraging the Gemini API to transform complex requirements into structured action plans, incorporating compliance analysis and technical architecture mapping."
+                },
+                "repositoryInfo": {
+                    "repositoryName": "impact-solution-roadmap",
+                    "repositoryLink": "https://github.com/eversonfilipe/impact-solution-roadmap",
+                    "repositoryKeywords": "React, TypeScript, Vite, Google Gemini API, AI Roadmap, Prompt Engineering, PWA, Technical Architecture"
+                },
+                "projectObjetive": {
+                    "pt-br": "Automatizar a criação de cronogramas técnicos e estratégicos, garantindo a integridade lógica da solução e reduzindo o ciclo de planejamento através de IA generativa.",
+                    "en": "To automate the creation of technical and strategic timelines, ensuring solution logical integrity and reducing the planning lifecycle through generative AI."
+                },
+                "techStack": [
+                    "React 18",
+                    "TypeScript",
+                    "Vite",
+                    "Google Gemini API",
+                    "Tailwind CSS",
+                    "Service Workers (PWA)",
+                    "JSONLogic"
+                ]
+            }
+        }
+    }
 }
