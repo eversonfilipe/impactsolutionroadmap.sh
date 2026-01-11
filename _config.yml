@@ -1,0 +1,21 @@
+title: "Impact Solution Roadmap | AI-Powered Strategy Architect"
+description: >-
+  Plataforma de geração de roadmaps profissionais otimizados por IA, feitos durante mentoria de impacto do instituto Joule.
+  Gere roadmaps estratégicos com IA, valide conformidade lógica e otimize seu raciocínio para um percurso de impacto, otimizado por IA Generativa, Gemini.
+user_name: eversonfilipe
+repository_name: impactsolutionroadmap.sh
+
+lang: pt-BR
+url: https://github.com/eversonfilipe/impactsolutionroadmap.sh
+author: "Éverson Filipe"
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-feed
+  - jekyll-gist
+
+keywords: "Geração de Roadmaps otimizados por IA, projeto Open-source, Gemini AI, Impacto Social"
+
+markdown: kramdown
+highlighter: rouge
